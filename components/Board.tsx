@@ -8,6 +8,7 @@ import { swapCard, swapColumns } from "@/lib/utils/swapper";
 import { useModalStore } from "@/store/ModalStore";
 import Modal from "./Modal";
 import { Tasks } from "@/lib/db/services";
+import Skeleton from "./Skeleton";
 
 type Props = {};
 
@@ -76,15 +77,21 @@ const Board = (props: Props) => {
         <Droppable droppableId="board" direction="horizontal" type="column">
           {(provided) => (
             <div
-              className="grid max-w-7xl grid-cols-1 gap-5 p-2 sm:grid-cols-3"
+              className=" flex max-w-7xl flex-col gap-5 p-2 sm:flex-row"
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
+              {board.length === 0 && (
+                <div className="grid w-screen grid-cols-1 gap-5 sm:grid-cols-3">
+                  <Skeleton />
+                  <Skeleton />
+                  <Skeleton />
+                </div>
+              )}
               {board.map((column, index) => (
                 <Column index={index} key={column.sectionId} column={column} />
               ))}
               {provided.placeholder}
-              <button onClick={() => console.log(board)}>Hi</button>
             </div>
           )}
         </Droppable>
