@@ -2,7 +2,6 @@ import { Tasks } from "@/lib/db/services";
 import { useBoardStore } from "@/store/BoardStore";
 import { useModalStore } from "@/store/ModalStore";
 import { Dialog, Transition } from "@headlessui/react";
-import { ID } from "appwrite";
 import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
 
@@ -17,7 +16,7 @@ export default function Modal() {
   const targetModal = (target: TargetModal) => {
     switch (target) {
       case "addSection": {
-        return <AddSection setIsShown={setIsShown} />;
+        return <AddSection valueTarget={valueTarget} setIsShown={setIsShown} />;
       }
       case "addCard": {
         return <AddCard valueTarget={valueTarget} setIsShown={setIsShown} />;
@@ -140,7 +139,7 @@ const AddCard = ({
     state.updateBoard,
   ]);
 
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data: Task = {
@@ -149,10 +148,10 @@ const AddCard = ({
       dueDate: formData.get("dueDate") as string,
       // image: formData.get("image") as string,
       sectionId: formData.get("sectionId") as string,
-      $id: ID.unique(),
+      $id: "",
       $createdAt: "",
     };
-    Tasks.createTask(data);
+    const newTaskId = await Tasks.createTask(data);
     const newBoard = board.map((section) => {
       if (section.sectionId === data.sectionId) {
         return {
@@ -165,7 +164,7 @@ const AddCard = ({
               dueDate: data.dueDate,
               // image: data.image,
               sectionId: data.sectionId,
-              $id: data.$id,
+              $id: newTaskId,
               $createdAt: "",
             },
           ],
@@ -217,17 +216,6 @@ const AddCard = ({
             className="input input-bordered w-full"
           />
         </div>
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Image</span>
-          </label>
-          <input
-            type="file"
-            name="image"
-            placeholder="Type here"
-            className="file-input input-bordered w-full"
-          />
-        </div>
         <p className="py-4 text-left">
           <span className="text-error">*</span> Required
         </p>
@@ -244,7 +232,13 @@ const AddCard = ({
   );
 };
 
-const AddSection = ({ setIsShown }: { setIsShown: () => void }) => {
+const AddSection = ({
+  setIsShown,
+  valueTarget,
+}: {
+  setIsShown: () => void;
+  valueTarget: any;
+}) => {
   return (
     <>
       <h3 className="text-lg font-bold">Add Section</h3>

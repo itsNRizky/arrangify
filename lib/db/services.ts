@@ -112,19 +112,23 @@ export const Tasks = {
     return response.documents;
   },
 
-  createTask: async (task: Task): Promise<void> => {
-    await databases.createDocument(
-      process.env.NEXT_PUBLIC_DATABASE_ID!,
-      process.env.NEXT_PUBLIC_TASKS_COLLECTION_ID!,
-      task.$id,
-      {
-        title: task.title,
-        description: task.description,
-        due_date: task.dueDate,
-        image: task.image,
-        section: task.sectionId,
-      },
-    );
+  createTask: async (task: Task): Promise<string> => {
+    const id = await databases
+      .createDocument(
+        process.env.NEXT_PUBLIC_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_TASKS_COLLECTION_ID!,
+        ID.unique(),
+        {
+          title: task.title,
+          description: task.description,
+          due_date: task.dueDate,
+          image: task.image,
+          section: task.sectionId,
+        },
+      )
+      .then((val) => val.$id);
+
+    return id;
   },
 
   updateTask: async ($id: string, task: Task): Promise<void> => {
