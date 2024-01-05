@@ -2,8 +2,9 @@ import { Sections, Tasks } from "@/lib/db/services";
 import { useBoardStore } from "@/store/BoardStore";
 import { useModalStore } from "@/store/ModalStore";
 import { Dialog, Transition } from "@headlessui/react";
-import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
+import Colorful from "@uiw/react-color-colorful";
+import { hsvaToHex } from "@uiw/color-convert";
 
 export default function Modal() {
   const [isShown, setIsShown, target, valueTarget] = useModalStore((state) => [
@@ -27,6 +28,11 @@ export default function Modal() {
       case "deleteSection": {
         return (
           <DeleteSection valueTarget={valueTarget} setIsShown={setIsShown} />
+        );
+      }
+      case "editSection": {
+        return (
+          <EditSection valueTarget={valueTarget} setIsShown={setIsShown} />
         );
       }
     }
@@ -260,6 +266,8 @@ const AddSection = ({
     state.updateBoard,
   ]);
 
+  const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 });
+
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -267,12 +275,18 @@ const AddSection = ({
       name: formData.get("name") as string,
       $id: "",
       user: valueTarget as string,
+      color: hsvaToHex(hsva),
     };
     const id = await Sections.createSection(data);
 
     const newBoard: BoardData = [
       ...board,
-      { sectionId: id, sectionName: data.name, tasks: [] },
+      {
+        sectionId: id,
+        sectionName: data.name,
+        tasks: [],
+        sectionColor: data.color,
+      },
     ];
     updateBoard(newBoard);
     setIsShown();
@@ -296,6 +310,21 @@ const AddSection = ({
             className="input input-bordered w-full"
           />
         </div>
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">
+              Label Color <span className="text-error">*</span>
+            </span>
+          </label>
+          <Colorful
+            style={{ width: "100%" }}
+            color={hsva}
+            disableAlpha
+            onChange={(color) => {
+              setHsva(color.hsva);
+            }}
+          />
+        </div>
         <p className="py-4 text-left">
           <span className="text-error">*</span> Required
         </p>
@@ -305,6 +334,91 @@ const AddSection = ({
           </button>
           <button type="submit" className="btn btn-success">
             Add
+          </button>
+        </div>
+      </form>
+    </>
+  );
+};
+
+const EditSection = ({
+  setIsShown,
+  valueTarget,
+}: {
+  setIsShown: () => void;
+  valueTarget: any;
+}) => {
+  const [board, updateBoard] = useBoardStore((state) => [
+    state.board,
+    state.updateBoard,
+  ]);
+
+  const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 });
+
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data: Section = {
+      name: formData.get("name") as string,
+      $id: "",
+      user: "",
+      color: hsvaToHex(hsva),
+    };
+    await Sections.updateSection(valueTarget, data);
+
+    const newBoard = board.map((section) => {
+      if (section.sectionId === valueTarget) {
+        return { ...section, sectionName: data.name };
+      } else {
+        return section;
+      }
+    });
+    updateBoard(newBoard);
+    setIsShown();
+  };
+  return (
+    <>
+      <h3 className="text-lg font-bold">Edit Section</h3>
+      <form onSubmit={submitHandler}>
+        <input type="hidden" name="sectionId" value={valueTarget} />
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">
+              Title <span className="text-error">*</span>
+            </span>
+          </label>
+          <input
+            required
+            name="name"
+            type="text"
+            placeholder="Type here"
+            className="input input-bordered w-full"
+          />
+        </div>
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">
+              Label Color <span className="text-error">*</span>
+            </span>
+          </label>
+          <Colorful
+            style={{ width: "100%" }}
+            color={hsva}
+            disableAlpha
+            onChange={(color) => {
+              setHsva(color.hsva);
+            }}
+          />
+        </div>
+        <p className="py-4 text-left">
+          <span className="text-error">*</span> Required
+        </p>
+        <div className="modal-action">
+          <button className="btn" onClick={setIsShown}>
+            Close
+          </button>
+          <button type="submit" className="btn btn-success">
+            Edit
           </button>
         </div>
       </form>

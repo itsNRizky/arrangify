@@ -42,11 +42,17 @@ const Column = (props: Props) => {
                 ref={provided.innerRef}
               >
                 <div>
-                  <div className="card-title flex items-center justify-between rounded-t-md bg-blue-500 p-3 text-primary-content">
+                  <div
+                    className={`card-title flex items-center justify-between rounded-t-md bg-${column.sectionColor} p-3 text-primary-content`}
+                  >
                     <h2>{column.sectionName}</h2>
                     <div className="flex items-center gap-2">
                       <MdEdit
-                        onClick={() => {}}
+                        onClick={() => {
+                          setIsShown();
+                          setTarget("editSection");
+                          setValueTarget(column.sectionId);
+                        }}
                         className="duration-200 hover:cursor-pointer hover:text-white"
                       />
                       <MdDelete

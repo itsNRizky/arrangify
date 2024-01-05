@@ -42,6 +42,7 @@ export const Sections = {
         ID.unique(),
         {
           name: section.name,
+          color: section.color,
           user: section.user,
         },
       )
@@ -182,6 +183,7 @@ export const Board = {
     const board = sections.map((section) => ({
       sectionId: section.$id,
       sectionName: section.name,
+      sectionColor: section.color,
       tasks: userTasks.flatMap((task) =>
         task.section.$id === section.$id
           ? [

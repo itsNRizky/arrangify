@@ -11,6 +11,7 @@ type Task = {
 type Column = {
   sectionId: string;
   sectionName: string;
+  sectionColor: string;
   tasks: Task[];
 };
 
@@ -26,6 +27,7 @@ type Section = {
   $id: string;
   name: string;
   user: string;
+  color: string;
 };
 
 type TargetModal =
@@ -33,4 +35,5 @@ type TargetModal =
   | "addCard"
   | "addSection"
   | "deleteCard"
-  | "deleteSection";
+  | "deleteSection"
+  | "editSection";
