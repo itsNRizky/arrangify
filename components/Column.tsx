@@ -43,7 +43,8 @@ const Column = (props: Props) => {
               >
                 <div>
                   <div
-                    className={`card-title flex items-center justify-between rounded-t-md bg-${column.sectionColor} p-3 text-primary-content`}
+                    style={{ backgroundColor: column.sectionColor }}
+                    className={`card-title flex items-center justify-between rounded-t-md p-3 text-primary-content`}
                   >
                     <h2>{column.sectionName}</h2>
                     <div className="flex items-center gap-2">
