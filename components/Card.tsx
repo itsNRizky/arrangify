@@ -37,7 +37,7 @@ const Card = (props: Props) => {
             <div className="collapse m-auto rounded-r-none bg-base-200">
               <input type="checkbox" />
               <div className="collapse-title text-lg font-medium">
-                {task.title}
+                <h3>{task.title}</h3>
               </div>
               <div className="collapse-content">
                 <p>{task.description}</p>

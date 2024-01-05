@@ -1,4 +1,4 @@
-import { Tasks } from "@/lib/db/services";
+import { Sections, Tasks } from "@/lib/db/services";
 import { useBoardStore } from "@/store/BoardStore";
 import { useModalStore } from "@/store/ModalStore";
 import { Dialog, Transition } from "@headlessui/react";
@@ -114,6 +114,19 @@ const DeleteSection = ({
   setIsShown: () => void;
   valueTarget: any;
 }) => {
+  const [board, updateBoard] = useBoardStore((state) => [
+    state.board,
+    state.updateBoard,
+  ]);
+
+  const deleteSectionHandler = async () => {
+    await Sections.deleteSection(valueTarget);
+    const newBoard: BoardData = board.filter(
+      (section) => section.sectionId !== valueTarget,
+    );
+    updateBoard(newBoard);
+    setIsShown();
+  };
   return (
     <>
       <h3 className="text-lg font-bold">Delete Section</h3>
@@ -121,6 +134,9 @@ const DeleteSection = ({
       <div className="modal-action">
         <button className="btn" onClick={setIsShown}>
           Close
+        </button>
+        <button className="btn btn-error" onClick={deleteSectionHandler}>
+          Delete
         </button>
       </div>
     </>
@@ -239,15 +255,59 @@ const AddSection = ({
   setIsShown: () => void;
   valueTarget: any;
 }) => {
+  const [board, updateBoard] = useBoardStore((state) => [
+    state.board,
+    state.updateBoard,
+  ]);
+
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data: Section = {
+      name: formData.get("name") as string,
+      $id: "",
+      user: valueTarget as string,
+    };
+    const id = await Sections.createSection(data);
+
+    const newBoard: BoardData = [
+      ...board,
+      { sectionId: id, sectionName: data.name, tasks: [] },
+    ];
+    updateBoard(newBoard);
+    setIsShown();
+  };
   return (
     <>
       <h3 className="text-lg font-bold">Add Section</h3>
-      <p className="py-4">Press ESC key or click the button below to close</p>
-      <div className="modal-action">
-        <button className="btn" onClick={setIsShown}>
-          Close
-        </button>
-      </div>
+      <form onSubmit={submitHandler}>
+        <input type="hidden" name="sectionId" value={valueTarget} />
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">
+              Title <span className="text-error">*</span>
+            </span>
+          </label>
+          <input
+            required
+            name="name"
+            type="text"
+            placeholder="Type here"
+            className="input input-bordered w-full"
+          />
+        </div>
+        <p className="py-4 text-left">
+          <span className="text-error">*</span> Required
+        </p>
+        <div className="modal-action">
+          <button className="btn" onClick={setIsShown}>
+            Close
+          </button>
+          <button type="submit" className="btn btn-success">
+            Add
+          </button>
+        </div>
+      </form>
     </>
   );
 };

@@ -34,16 +34,20 @@ export const User = {
 };
 
 export const Sections = {
-  createSection: async (section: Section): Promise<void> => {
-    await databases.createDocument(
-      process.env.NEXT_PUBLIC_DATABASE_ID!,
-      process.env.NEXT_PUBLIC_SECTIONS_COLLECTION_ID!,
-      ID.unique(),
-      {
-        name: section.name,
-        user: section.user,
-      },
-    );
+  createSection: async (section: Section): Promise<string> => {
+    const id = await databases
+      .createDocument(
+        process.env.NEXT_PUBLIC_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_SECTIONS_COLLECTION_ID!,
+        ID.unique(),
+        {
+          name: section.name,
+          user: section.user,
+        },
+      )
+      .then((val) => val.$id);
+
+    return id;
   },
 
   getSections: async (): Promise<Models.Document[]> => {

@@ -1,6 +1,7 @@
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 import React from "react";
 import Card from "./Card";
+import { MdEdit, MdDelete } from "react-icons/md";
 import { useModalStore } from "@/store/ModalStore";
 
 type Props = {
@@ -41,9 +42,23 @@ const Column = (props: Props) => {
                 ref={provided.innerRef}
               >
                 <div>
-                  <h2 className="card-title rounded-t-md bg-blue-500 p-3 text-primary-content">
-                    {column.sectionName}
-                  </h2>
+                  <div className="card-title flex items-center justify-between rounded-t-md bg-blue-500 p-3 text-primary-content">
+                    <h2>{column.sectionName}</h2>
+                    <div className="flex items-center gap-2">
+                      <MdEdit
+                        onClick={() => {}}
+                        className="duration-200 hover:cursor-pointer hover:text-white"
+                      />
+                      <MdDelete
+                        onClick={() => {
+                          setIsShown();
+                          setTarget("deleteSection");
+                          setValueTarget(column.sectionId);
+                        }}
+                        className="duration-200 hover:cursor-pointer hover:text-white"
+                      />
+                    </div>
+                  </div>
                   {column.tasks.map((task, index) => (
                     <Card key={task.$id} task={task} index={index} />
                   ))}
