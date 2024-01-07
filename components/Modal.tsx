@@ -4,7 +4,7 @@ import { useModalStore } from "@/store/ModalStore";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import Colorful from "@uiw/react-color-colorful";
-import { hsvaToHex } from "@uiw/color-convert";
+import { hexToHsva, hsvaToHex } from "@uiw/color-convert";
 
 export default function Modal() {
   const [isShown, setIsShown, target, valueTarget] = useModalStore((state) => [
@@ -346,29 +346,28 @@ const EditSection = ({
   valueTarget,
 }: {
   setIsShown: () => void;
-  valueTarget: any;
+  valueTarget: Column;
 }) => {
   const [board, updateBoard] = useBoardStore((state) => [
     state.board,
     state.updateBoard,
   ]);
 
-  const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 });
+  const [name, setName] = useState(valueTarget.sectionName);
+  const [hsva, setHsva] = useState(hexToHsva(valueTarget.sectionColor));
 
-  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  const submitHandler = async () => {
     const data: Section = {
-      name: formData.get("name") as string,
+      name: name,
       $id: "",
       user: "",
       color: hsvaToHex(hsva),
     };
-    await Sections.updateSection(valueTarget, data);
+    await Sections.updateSection(valueTarget.sectionId, data);
 
     const newBoard = board.map((section) => {
-      if (section.sectionId === valueTarget) {
-        return { ...section, sectionName: data.name };
+      if (section.sectionId === valueTarget.sectionId) {
+        return { ...section, sectionName: data.name, sectionColor: data.color };
       } else {
         return section;
       }
@@ -379,8 +378,7 @@ const EditSection = ({
   return (
     <>
       <h3 className="text-lg font-bold">Edit Section</h3>
-      <form onSubmit={submitHandler}>
-        <input type="hidden" name="sectionId" value={valueTarget} />
+      <form>
         <div className="form-control">
           <label className="label">
             <span className="label-text">
@@ -390,6 +388,8 @@ const EditSection = ({
           <input
             required
             name="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             type="text"
             placeholder="Type here"
             className="input input-bordered w-full"
@@ -413,15 +413,15 @@ const EditSection = ({
         <p className="py-4 text-left">
           <span className="text-error">*</span> Required
         </p>
-        <div className="modal-action">
-          <button className="btn" onClick={setIsShown}>
-            Close
-          </button>
-          <button type="submit" className="btn btn-success">
-            Edit
-          </button>
-        </div>
       </form>
+      <div className="modal-action">
+        <button className="btn" onClick={setIsShown}>
+          Close
+        </button>
+        <button className="btn btn-success" onClick={submitHandler}>
+          Edit
+        </button>
+      </div>
     </>
   );
 };
