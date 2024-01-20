@@ -77,7 +77,7 @@ const Board = (props: Props) => {
         <Droppable droppableId="board" direction="horizontal" type="column">
           {(provided) => (
             <div
-              className=" flex max-w-7xl flex-col gap-5 p-2 sm:flex-row"
+              className=" flex max-w-7xl flex-col gap-5 p-2 sm:flex-row "
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
