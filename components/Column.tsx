@@ -37,7 +37,7 @@ const Column = (props: Props) => {
           >
             {(provided) => (
               <div
-                className={`card flex flex-col justify-between rounded-md bg-base-100 shadow-md`}
+                className={`card flex min-w-[300px] flex-col justify-between rounded-md bg-base-100 shadow-md`}
                 {...provided.droppableProps}
                 ref={provided.innerRef}
               >

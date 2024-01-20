@@ -2,7 +2,9 @@
 import { useModalStore } from "@/store/ModalStore";
 import React from "react";
 
-type Props = {};
+type Props = {
+  userId: string;
+};
 
 const AddSectionButton = (props: Props) => {
   const [setIsShown, setTarget, setValueTarget] = useModalStore((state) => [
@@ -15,7 +17,7 @@ const AddSectionButton = (props: Props) => {
       onClick={() => {
         setIsShown();
         setTarget("addSection");
-        setValueTarget("657009ce8fc195402f7c");
+        setValueTarget(props.userId);
       }}
       className="btn btn-ghost"
     >
