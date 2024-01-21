@@ -83,7 +83,6 @@ export const Sections = {
       $id,
       {
         name: section.name,
-        color: section.color,
       },
     );
   },

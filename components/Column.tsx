@@ -52,7 +52,7 @@ const Column = (props: Props) => {
                         onClick={() => {
                           setIsShown();
                           setTarget("editSection");
-                          setValueTarget(column);
+                          setValueTarget(column.sectionId);
                         }}
                         className="duration-200 hover:cursor-pointer hover:text-white"
                       />
