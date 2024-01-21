@@ -1,4 +1,4 @@
-import { Board, Sections } from "@/lib/db/services";
+import { Board } from "@/lib/db/services";
 import { Tasks } from "@/lib/db/services";
 import { create } from "zustand";
 
@@ -17,20 +17,9 @@ interface BoardState {
 
 export const useBoardStore = create<BoardState>((set) => ({
   board: [],
-  getBoardByUserId: async ($userId: string) => {
+  getBoardByUserId: async ($userId) => {
     const board = await Board.getBoardByUser($userId);
-    if (board.length === 0) {
-      const defaultSections: Section = {
-        $id: "",
-        name: "todo",
-        color: "#88C0D0",
-        user: $userId,
-      };
-      await Sections.createSection(defaultSections);
-      set({ board: await Board.getBoardByUser($userId) });
-    } else {
-      set({ board });
-    }
+    set({ board });
   },
   updateBoard: (board) => {
     set({ board });

@@ -10,9 +10,7 @@ import Modal from "./Modal";
 import { Tasks } from "@/lib/db/services";
 import Skeleton from "./Skeleton";
 
-type Props = {
-  userId: string;
-};
+type Props = {};
 
 const Board = (props: Props) => {
   const [board, getBoardByUserId, updateBoard, moveTaskToSection] =
@@ -23,9 +21,11 @@ const Board = (props: Props) => {
       state.moveTaskToSection,
     ]);
 
+  const [isShown] = useModalStore((state) => [state.isShown]);
+
   useEffect(() => {
-    getBoardByUserId(props.userId);
-  }, [getBoardByUserId, props.userId]);
+    getBoardByUserId("657009ce8fc195402f7c");
+  }, [getBoardByUserId]);
 
   const onDragEndHandler = async (results: DropResult) => {
     const { source, destination, draggableId, type } = results;
