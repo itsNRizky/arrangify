@@ -83,6 +83,7 @@ export const Sections = {
       $id,
       {
         name: section.name,
+        color: section.color,
       },
     );
   },
@@ -179,7 +180,7 @@ export const Board = {
     const tasks = await Tasks.getTasks();
     const sections = await Sections.getSectionsByUserId($userId);
 
-    const userTasks = tasks.filter((task) => task.section.user.$id === $userId);
+    const userTasks = tasks.filter((task) => task.section.user === $userId);
     const board = sections.map((section) => ({
       sectionId: section.$id,
       sectionName: section.name,
